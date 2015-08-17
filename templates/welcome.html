@@ -1,0 +1,131 @@
+<head>  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+{% extends 'base.html' %}
+{% block content %}
+<div class= "col-xs-4">
+
+      <h3> {{ user.first_name }}  {{ user.last_name}} </h3>
+      <dl class="dl-horizontal">
+        <dt>Email address</dt>
+        <dd>{{ user.email_address }}</dd>
+      </dl> 
+      <dl class="dl-horizontal">
+        <dt>Phone</dt>
+        <dd>{{ user.phone_number }}</dd>
+      </dl>            
+      <dl class="dl-horizontal">
+        <dt>Remind me</dt>
+        <dd>{{ user.reminder }}</dd>
+      </dl>       
+</div>
+<div class = "col-xs-2">   
+  <div class="panel panel-primary">
+    <div class="panel-heading">Mandated Hours</div>
+    <div class="panel-body">
+       <h4>{{ mandated }} </h4>
+    </div>
+  </div>
+</div>
+<div class = "col-xs-2">   
+   <div class="panel panel-primary">
+    <div class="panel-heading">Completed Hours</div>
+    <div class="panel-body">
+      <h4>{{completed}} </h4>
+    </div>
+  </div>
+</div> 
+<div class = "col-xs-4">   
+  <div class="panel panel-primary">
+    <div class="panel-heading">Progress</div>
+    <div class="panel-body">
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"> 20% </div>
+      </div>
+    </div>
+  </div>
+</div> 
+
+
+<div class="col-xs-12" id="EventDataTable">
+  <div class="Title">
+    <h3>Upcoming Events</h3>
+  </div>
+  <table class="table table-hover">
+      
+      <thead> 
+          <th>Event Id</th>
+          <th>Event Name</th>
+          <th>Event Description</th>
+          <th>Event Date</th>
+          <th>Event Status</th>
+          <th>Number of spots</th>
+          <th>Registration Status</th>
+          <th>Action </th>
+      </thead>
+    </tbody>
+    {% for item in sign_up %}
+      <tr>
+          <td id="eventid">{{ item.event_id }}</td>
+          <td id="eventname">{{ item.event_name }}</td>
+          <td>{{item.event_description}}</td>
+          <td>{{ item.event_date }}</td>
+          <td>{{ item.event_status }}</td>
+          <td>{{ item.no_of_remaining_spots }}</td>
+          {% if not item.status %}
+          <td>Not Registered</td>
+            <td> <button class="btn" id="sign_up"> Sign up</button></td>
+          {% else %}
+          <td>{{ item.status }}</td>
+          <td> <button class="btn" id="cancel"> Cancel </button></td>
+          {% endif %}
+      </tr>
+    {% endfor %}    
+</div>
+
+
+<script src="static/jquery.js"></script>
+
+  <script type="text/javascript">
+    $('#EventDataTable').on('click', '.btn', function()
+        {
+
+          alert('Hello')
+      
+        eveid=$(this).parent().siblings('#eventid').text();
+        alert(eveid)
+
+
+        //eveid = eveidObj.innerHTML;
+        //evename = $(this).find('#eventname').text();
+        userid = "{{ user.user_id }}"
+        if ($(this).attr('id')=="sign_up"){
+          op = "register"}
+        else if($(this).attr('id')=="cancel"){
+          op = "cancel"}
+
+        // Upadting the database with the parent_id and event_id that the user has registered for via AJAX
+        $.post('/event_signup_confirmed', { userid: userid, eventid: eveid, opcode:op }, function (results) {
+          //var adjective = results;
+           alert ("printing the index and element")
+            $.each(results, function(index, element) {
+      //alert ( element);
+              alert(index)
+              alert(element)
+            });          
+            alert(adjective);
+
+          })
+
+          //alert(username +' has successfully registered for event with id '+ eveid + ' : '+evename)
+      $(this).text( "Cancel")
+      $(this).prop('disabled', true);
+
+});
+
+
+
+
+</script>
+
+{% endblock %}
