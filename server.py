@@ -43,7 +43,7 @@ def login_process():
 
 	if user_count==0:
 		flash("No such user")
-		return render_template("sign_up.html")
+		return render_template("signup.html")
 	else:
 		
 		user = User.query.filter_by(email_address=email).one()
@@ -52,7 +52,7 @@ def login_process():
 		if user.password == passwd:
 			session["user_id"] = user.user_id
 			session["email"] = email
-			flash("Logged in")
+			#flash("Logged in")
 			print "Logged in"
 			print session["user_id"]
 			print user.user_type
@@ -78,6 +78,18 @@ def login_process():
 				else:
 					completed_hours = 0
 				print completed_hours
+				if completed_hours != 0 and total_hours != 0:
+					print ("I am in if for percentcomplete")
+					percentcomplete = float(completed_hours)/float(total_hours) * 100
+				elif completed_hours == 0 and total_hours != 0:
+					print ("I am in elseif for percentcomplete")
+
+					percentcomplete = 0
+				else:
+					percentcomplete = 'NA'
+
+				print int(percentcomplete)
+
 				remaining_hours = total_hours-completed_hours
 				user_registration = Registration.query.filter_by(parent_id=parent).subquery()
 				print "user_registration"
@@ -86,7 +98,7 @@ def login_process():
 				past_sign_up = db.session.query(Event.event_id,Event.event_name,Event.event_description,Event.event_date,Event.event_status,Registration.slot_id  ,Registration.showup).join(Registration).filter(Registration.parent_id==parent,Event.event_date <= date.today() ).all()
 				print sign_up
 
-			   	return render_template("welcome.html",user=user,mandated=total_hours,completed=completed_hours,remaining_hours=remaining_hours, sign_up=sign_up, past_sign_up=past_sign_up)
+			   	return render_template("welcome.html",user=user,mandated=total_hours,completed=completed_hours,remaining_hours=remaining_hours, percentcomplete = int(percentcomplete), sign_up=sign_up, past_sign_up=past_sign_up)
 		else:
 			flash("The password is incorrect. Please try again")
 			return render_template("login.html")
@@ -197,18 +209,15 @@ def logout():
     """ LOGOUT."""
     if "user_id" in session: 
         session.pop('user_id', None)
-        flash('You have been logged out')
+        flash('You have logged out successfully')
         return render_template('login.html')
     else: 
-        flash('Are you sure you logged in?')
+        #flash('Are you sure you logged in?')
         return render_template('login.html')
       
-
-
-
-
-
-
+@app.route("/sign_up")
+def usersignup():
+	return render_template('signup.html')
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
