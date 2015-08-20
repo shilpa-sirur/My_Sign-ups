@@ -63,7 +63,11 @@ def login_process():
 
 				parent = user.user_id
 				mandated = db.session.query(Parent_Child.parent_id,label('children',func.count(Parent_Child.student_id))).group_by(Parent_Child.parent_id).filter_by(parent_id=parent).first()
+				
 				print mandated
+				
+				children = db.session.query(Student.student_id,Student.first_name,Student.last_name,Student.grade,Student.year_joined,Student.status ).join(Parent_Child).filter(Parent_Child.parent_id==parent).all()
+
 				if mandated is not None:
 					total_hours = mandated.children*10
 				else:
@@ -71,13 +75,16 @@ def login_process():
 				
 				print total_hours
 				completed = db.session.query(Registration.parent_id,label('slots',func.count(Registration.slot_id))).group_by(Registration.parent_id).filter_by(parent_id=parent , showup='Yes').first()
+				
 				print completed
 				
 				if completed is not None:
 					completed_hours = completed.slots*2
 				else:
 					completed_hours = 0
+				
 				print completed_hours
+
 				if completed_hours != 0 and total_hours != 0:
 					print ("I am in if for percentcomplete")
 					percentcomplete = float(completed_hours)/float(total_hours) * 100
@@ -86,19 +93,30 @@ def login_process():
 
 					percentcomplete = 0
 				else:
-					percentcomplete = 'NA'
-
+					percentcomplete = 0
+				print "Below "
 				print int(percentcomplete)
 
 				remaining_hours = total_hours-completed_hours
 				user_registration = Registration.query.filter_by(parent_id=parent).subquery()
+				
+
 				print "user_registration"
 				print user_registration
 				sign_up = db.session.query(Event.event_id,Event.event_name,Event.event_description,Event.event_date,Event.event_status,label('no_of_remaining_spots',Event.no_of_spots - Event.no_of_reg_spots),user_registration.c.parent_id,user_registration.c.status).outerjoin(user_registration,Event.event_id==user_registration.c.event_id).filter(Event.event_date >= date.today() ).all()
 				past_sign_up = db.session.query(Event.event_id,Event.event_name,Event.event_description,Event.event_date,Event.event_status,Registration.slot_id  ,Registration.showup).join(Registration).filter(Registration.parent_id==parent,Event.event_date <= date.today() ).all()
+				
+				print "before render_template"
+				print children
+				print total_hours
+				print completed_hours
+				print remaining_hours
+				print percentcomplete
+				print past_sign_up
 				print sign_up
+				print user
 
-			   	return render_template("welcome.html",user=user,mandated=total_hours,completed=completed_hours,remaining_hours=remaining_hours, percentcomplete = int(percentcomplete), sign_up=sign_up, past_sign_up=past_sign_up)
+			   	return render_template("welcome.html",user=user,children=children,mandated=total_hours,completed=completed_hours,remaining_hours=remaining_hours, percentcomplete = int(percentcomplete), sign_up=sign_up, past_sign_up=past_sign_up)
 		else:
 			flash("The password is incorrect. Please try again")
 			return render_template("login.html")
@@ -215,9 +233,44 @@ def logout():
         #flash('Are you sure you logged in?')
         return render_template('login.html')
       
-@app.route("/sign_up")
+@app.route("/sign_up" , methods=['POST'])
 def usersignup():
+	print "I am in the sign up page"
+	""" User input details to populate the user profile page"""
+	first_name = request.form.get('fname')
+	last_name = request.form.get('lname')
+	email_address = request.form.get('email')
+	password = request.form.get('password')
+	user_address = request.form.get('address')
+	phone_number = request.form.get('phone')
+	role = request.form.get('role')
+	email_reminder = request.form.get('email_reminder')
+	user_count = User.query.filter_by(email_address=email_address).count()
+
+	print role
+	print email_reminder
+	print user_address
+
+	if user_count != 0 :
+		flash("Looks an email_address with your name already exists")
+		return render_template("login.html")
+	else:
+		flash("Please signup for an account")
+		# Inserting a new user record into users table 
+		new_user = User(password=password, first_name=first_name,last_name=last_name,user_type='User',role=role,reminder=email_reminder,email_address=email_address,phone_number=phone_number ,status='Active', user_address=user_address)		
+		db.session.add(new_user)		
+		db.session.commit()	
+		#
+		new_user = User.query.filter_by(email_address=email_address).one()
+		return render_template("user_profile.html",new_user=new_user)
+
+@app.route("/signup_page")
+def signup_page():
 	return render_template('signup.html')
+
+@app.route("/school_events")
+def school_events():
+	return render_template('school_events.html')
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

@@ -27,14 +27,15 @@ class User(db.Model):
     email_address = db.Column(db.String(50), nullable = False)
     phone_number = db.Column(db.String(20), nullable=True)   
     status = db.Column(db.String(25), nullable=False)
+    user_address=db.Column(db.String(100), nullable=False)
        
     
 
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<User user_id=%s first_name=%s last_name=%s user_type=%s role=%s reminder=%s email_address=%s phone_number=%s status=%s>" % (
-            self.user_id, self.first_name, self.last_name, self.user_type, self.role, self.reminder, self.email_address, self.phone_number, self.status)
+        return "<User user_id=%s first_name=%s last_name=%s user_type=%s role=%s reminder=%s email_address=%s phone_number=%s status=%s address=%s>" % (
+            self.user_id, self.first_name, self.last_name, self.user_type, self.role, self.reminder, self.email_address, self.phone_number, self.status, self.user_address)
 
 
 
@@ -107,16 +108,17 @@ class Parent_Child(db.Model):
 
     __tablename__ = "parent_child_relations"
 
-    student_id = db.Column(db.Integer, autoincrement = True, primary_key = True)
-    parent_id = db. Column(db.String(50), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer,db.ForeignKey('students.student_id'))
+    parent_id = db.Column(db.Integer,db.ForeignKey('users.user_id'))
 
 
         
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<Parent_child_relation student_id=%s parent_id=%s>" % (
-            self.student_id, self.parent_id)
+        return "<Parent_child_relation id=%s student_id=%s parent_id=%s>" % (
+            self.id,self.student_id, self.parent_id)
 
   
 # End Part 1
