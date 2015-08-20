@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1> Thanks a lot ! </h1>
+
+<div>
+	<div class= "col-xs-4"> 
+		<ul class="list-inline">
+		<li>
+			<span class="glyphicon glyphicon-user"></span>
+			<br>
+			<address>
+				<strong>{{ new_user.first_name }}  {{ new_user.last_name}}</strong><br>
+				<a href="mailto:#">{{ new_user.email_address }}</a>
+				{{new_user.password}}
+				{{new_user.role}}
+			</address>  
+			<address>
+				<strong>Need Reminder : </strong>
+				{{ new_user.reminder }}
+			</address>  
+			<address>
+				<strong>Address</strong><br>
+				{{new_user.address}}
+				<abbr title="Phone">P:</abbr> {{ new_user.phone_number }}
+			</address>  
+
+		</li>
+		</ul>         
+	</div>
+
+	<div class= "col-xs-8"> 
+		<ul class="list-inline">
+		<li>
+			<span class="glyphicon glyphicon-plus"></span>
+
+
+		<form class="form-horizontal">
+		  <div class="form-group">
+		    <label for="inputEmail3" class="col-xs-4 control-label">First Name</label>
+		    <div class="col-xs-8">
+		      <input type="text" class="form-control" id="inputFN" placeholder="First Name" name="first_name">
+		    </div>
+		  </div>
+			<label for="inputEmail3" class="col-xs-4 control-label">First Name</label>
+
+		    <div class="col-xs-8">
+		      <input type="text" class="form-control" id="inputLN" placeholder="Last Name" name="last_name">
+		    </div>
+		    			<br>       
+
+		    <label for="inputEmail3" class="col-xs-4 control-label">Grade</label>
+			<br>       
+			<div class="col-xs-8">
+
+			<select class="form-control" name="Grade">
+			  <option>First</option>
+			  <option>Second</option>
+			  <option>Third</option>
+			  <option>Fourth</option>
+			  <option>Fifth</option>			
+			</select>
+			</div>
+			<br>
+			<br>       
+
+		    <label for="inputEmail3" class="col-xs-4 control-label">Year of Joining</label>
+			<div class="col-xs-8">
+		      <input type="text" class="form-control" id="inputLN" placeholder="Year of Joining" name="yoj">
+		    </div>
+		    <br>
+		    <br>
+		    <div class="col-xs-8">
+		      <button type="submit" class="btn btn-default">Register Child</button>
+		    </div>
+		  </div>
+		</form>
+			<br>
+
+		</li>
+		</ul>         
+	</div>
+</div>
+
+
+{% endblock %}
