@@ -15,23 +15,28 @@
       </div>
       <table class ="table table-hover" id="AdminEvent">  
         <thead>
-           <th class="EventDataCell">Event Id</th>
+           <th style="display: none" class="EventDataCell">Event Id</th>
            <th class="EventDataCell">Event Name</th>
            <th class="EventDataCell">Event Description</th>
            <th class="EventDataCell">Event Date</th>
            <th class="EventDataCell">Event Status</th>
            <th class="EventDataCell">Number of spots</th>
-           <th class="EventDataCell">Action </th>
+           <th class="EventDataCell">Number of Registration</th>
+           <th class="EventDataCell">Waitlisted</th>
+
+          <th class="EventDataCell">Action </th>
         </thead>   
       {% for item in sign_up %}
         <tr class="EventDataRow">
-          <td class ="EventDataCell" id="eventid">{{ item.event_id }}</td>
+          <td style="display: none" class ="EventDataCell" id="eventid">{{ item.event_id }}</td>
           <td class="EventDataCell" id="eventname">{{ item.event_name }}</td>
           <td class="EventDataCell" id="eventdesc">{{item.event_description}}</td>
           <td class="EventDataCell" id="eventdate">{{ item.event_date }}</td>
           <td class="EventDataCell" id="eventstatus">{{ item.event_status }}</td>
           <td class="EventDataCell" id="noofspots">{{ item.no_of_spots }}</td>
-          <td class="EventDataCell"> <span class="glyphicon glyphicon-pencil"></span> <button class="edit">Edit Event</button></td>
+          <td class="EventDataCell" id="noofspots">{{ item.no_of_reg_spots }}</td>
+          <td class="EventDataCell" id="noofspots">{{ item.no_of_waitlist_spots }}</td>
+         <td class="EventDataCell"> <span class="glyphicon glyphicon-pencil"></span> <button class="edit">Edit Event</button></td>
         </tr>
     {% endfor %}    
 </tr>

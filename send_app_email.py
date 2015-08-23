@@ -37,7 +37,7 @@ def send_notification(to_email_id,subject,message):
   # create a message to send
   message = MIMEText(message)
   message['to'] = to_email_id
-  message['from'] = "Clinch_admin@clinch.com"
+  message['from'] = "clinchhb@gmail.com"
   message['subject'] = subject
   body = {'raw': base64.b64encode(message.as_string())}
 

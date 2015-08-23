@@ -4,8 +4,12 @@
 {% extends 'base1.html' %}
 {% block content %}
 
+
 <div class= "col-xs-4">
  
+ <div class="panel panel-primary">
+  <div class="panel-body">
+
  <ul class="list-inline">
   <li>
     <span class="glyphicon glyphicon-user"></span>
@@ -22,17 +26,19 @@
   <li>
 
     <address>
-      <strong>Address</strong><br>
-      795 Folsom Ave, Suite 600<br>
-      San Francisco, CA 94107<br>
-      <abbr title="Phone">P:</abbr> {{ user.phone_number }}
+      <strong>Address :</strong> {{ user.user_address}}<br>
+      <abbr title="Phone"><strong>Phone #: </strong></abbr> {{ user.phone_number }}
     </address>  
 
     </li>
   </ul>         
 </div>
-
+</div>
+</div>
 <div class= "col-xs-4">
+
+<div class="panel panel-primary">
+  <div class="panel-body">
 
   <ul class="list-inline">
       {% for item in children %}
@@ -48,17 +54,19 @@
       {% endfor %}    
     </ul>
 </div>
-<div class = "col-xs-1">   
+</div>
+</div>
+<div class = "col-xs-2">   
   <div class="panel panel-primary">
-    <div class="panel-heading">Mandated</div>
+    <div class="panel-heading">Mandated hours</div>
     <div class="panel-body">
        <h4>{{ mandated }} </h4>
     </div>
   </div>
 </div>
-<div class = "col-xs-1">   
+<div class = "col-xs-2">   
    <div class="panel panel-primary">
-    <div class="panel-heading">Completed</div>
+    <div class="panel-heading">Completed hours</div>
     <div class="panel-body">
       <h4>{{completed}} </h4>
     </div>
@@ -84,56 +92,64 @@
   <table class="table table-hover">
       
       <thead> 
-          <th>Event Id</th>
-          <th>Event Name</th>
-          <th>Event Description</th>
-          <th>Event Date</th>
-          <th>Event Status</th>
-          <th>Number of spots</th>
+          <th style="display: none" >Event Id</th>
+          <th >Event Name</th>
+          <th >Event Description</th>
+          <th >Event Date</th>
+          <th >Event Status</th>
+          <th>Available spots</th>
           <th>Registration Status</th>
           <th>Action </th>
       </thead>
     {% for item in sign_up %}
       <tr>
-          <td id="eventid">{{ item.event_id }}</td>
+          <td style="display: none" id="eventid">{{ item.event_id }}</td>
           <td id="eventname">{{ item.event_name }}</td>
-          <td>{{item.event_description}}</td>
-          <td>{{ item.event_date }}</td>
-          <td>{{ item.event_status }}</td>
-          <td>{{ item.no_of_remaining_spots }}</td>
-          {% if not item.status %}
-          <td>Not Registered</td>
-            <td> <button class="btn" id="sign_up"> Sign up</button></td>
+          <td id="eventdesc">{{item.event_description}}</td>
+          <td id="eventdate">{{ item.event_date }}</td>
+          <td id="eventstatus">{{ item.event_status }}</td>
+          <td id="noofspots">{{ item.no_of_remaining_spots }}</td>
+          {% if ( not item.status and item.no_of_remaining_spots == 0) %}
+          <td id="regstatus" >Not Registered</td>
+            <td> <button class="btn" id="waitlist">Waitlist <span class="badge">{{ item.no_of_waitlist_spots }}</span> </button></td>
+          {% elif ( not item.status and item.no_of_remaining_spots != 0 ) %}
+          <td id="regstatus" >Not Registered</td>
+            <td> <button class="btn" id="sign_up">Sign up</button></td>         
+          {% elif item.status == "Cancelled" %}
+           <td id="regstatus">{{ item.status }}</td>
+            <td><button class="btn" id="cancel" disabled> Cancel </button></td>
           {% else %}
-          <td>{{ item.status }}</td>
-          <td> <button class="btn" id="cancel"> Cancel </button></td>
+            <td id="regstatus">{{ item.status }}</td>
+            <td><button class="btn" id="cancel"> Cancel </button></td>
           {% endif %}
       </tr>
     {% endfor %}    
 </div>
 
 <div class="col-xs-12" id="PastEventDataTable">
-  <div class="Title">
+
+  <table class="table table-hover">
+        <div class="Title">
     <h3>Past Events</h3>
   </div>
-  <table class="table table-hover">
-      
       <thead> 
-          <th>Event Id</th>
+          <th style="display: none">Event Id</th>
           <th>Event Name</th>
           <th>Event Description</th>
           <th>Event Date</th>
           <th>Event Status</th>
-          <th>Number of spots</th>
+          <th>Attended</th>
+          <th>Feedback Survey</th>
       </thead>
     {% for item in past_sign_up %}
       <tr>
-          <td id="eventid">{{ item.event_id }}</td>
+          <td style="display: none" id="eventid">{{ item.event_id }}</td>
           <td id="eventname">{{ item.event_name }}</td>
-          <td>{{item.event_description}}</td>
-          <td>{{ item.event_date }}</td>
-          <td>{{ item.event_status }}</td>
-          <td>{{ item.no_of_remaining_spots }}</td>
+          <td id="eventdesc">{{item.event_description}}</td>
+          <td id="eventdate">{{ item.event_date }}</td>
+          <td id="regstatus">{{ item.event_status }}</td>
+          <td id="showup">{{ item.showup }}</td>
+          <td> <a href="https://www.surveymonkey.com/s/ZMCP6HN"> <span class="glyphicon glyphicon-comment"></span> </td></a>
       </tr>
     {% endfor %}    
 </div>
@@ -157,34 +173,50 @@
 
        $('.progress-bar').attr('class', x ); 
 });
-
+    // This is a function to change the status of the Sign up button
     $('#EventDataTable').on('click', '.btn', function()
         {
 
-          alert('Hello')
+        alert('Hello')
       
         eveid=$(this).parent().siblings('#eventid').text();
-        alert(eveid)
+        var row = $(this).closest('tr'),
+        eveid = $(row).find('#eventid').text();
+        evename = $(row).find('#eventname').text();
 
 
         //eveid = eveidObj.innerHTML;
         //evename = $(this).find('#eventname').text();
         userid = "{{ user.user_id }}"
+        
         if ($(this).attr('id')=="sign_up"){
           op = "register"}
+        else if($(this).attr('id')=="waitlist"){
+          op = "waitlist"}
         else if($(this).attr('id')=="cancel"){
           op = "cancel"}
 
+        alert (op)
         // Upadting the database with the parent_id and event_id that the user has registered for via AJAX
         $.post('/event_signup_confirmed', { userid: userid, eventid: eveid, opcode:op }, function (results) {
-          var adjective = results;
-           alert ("printing the index and element")
-            $.each(results, function(index, element) {
-      //alert ( element);
-              alert(index)
-              alert(element)
-            });          
-            alert(adjective);
+          //var adjective = results;
+
+          alert ( "printing status")
+          //$("#eventstatus).text()
+
+          console.log($(row) )
+          //
+
+          alert(results.json_list.no_of_waitlisted )
+
+          //everegstatus=$(row).find('#regstatus');
+          //alert ( "printing event id")
+          //alert ($(everegstatus).text())
+
+          //console.log($(this).closest('tr').find('#regstatus').text());
+
+          $(row).find('#regstatus').text(results.json_list.status);
+          $(row).find('#noofspots').text(results.json_list.no_of_remaining_spots);
 
           })
 

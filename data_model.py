@@ -9,6 +9,9 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 
+def date_handler(obj):
+    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
 ##############################################################################
 # Part 1: Compose ORM
 
@@ -51,6 +54,7 @@ class Event(db.Model):
     event_description = db.Column(db.String(250), nullable=False)
     event_status = db.Column(db.String(25), nullable=False)
     no_of_spots = db.Column(db.Integer, nullable=False)
+    no_of_waitlist_spots = db.Column(db.Integer, nullable=False)
     recurring = db.Column(db.String(25), nullable= False)
     created_id = db.Column(db.Integer, nullable=False) 
     no_of_reg_spots= db.Column(db.Integer,nullable=False)  
@@ -59,8 +63,8 @@ class Event(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<event event_id=%s event_name=%s event_date=%s event_length=%s event_description=%s no_of_spots=%s event_status=%s recurring=%s created_id=%s no_of_registered_spots=%s>" % (
-            self.event_id, self.event_name, self.event_date, self.event_date,self.event_length, self.event_description, self.no_of_spots, self.event_status, self.recurring, self.created_id, self.no_of_reg_spots)        
+        return "<event event_id=%s event_name=%s event_date=%s event_length=%s event_description=%s no_of_spots=%s event_status=%s recurring=%s created_id=%s no_of_registered_spots=%s no_of_waitlist_spots=%s>" % (
+            self.event_id, self.event_name, self.event_date ,self.event_length, self.event_description, self.no_of_spots, self.event_status, self.recurring, self.created_id, self.no_of_reg_spots, self.no_of_waitlist_spots)        
 
 
 class Registration(db.Model):
