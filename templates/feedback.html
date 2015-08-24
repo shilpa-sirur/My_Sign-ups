@@ -1,0 +1,42 @@
+{% extends 'base1.html' %}
+{% block content %}
+
+
+<div class="col-xs-6">
+
+<iframe src="https://www.surveymonkey.com/s/ZMCP6HN" width="700" height="800" frameborder="1" scrolling="yes"></iframe>
+</div>
+
+<div <div class="col-xs-6">
+ 
+ <h5> Here are some of the responses from the forum of parents! </h5>
+
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{feedback.A1}}</h3>
+  </div>
+  <div class="panel-body">
+
+<div class="list-group">
+  <a href="#" class="list-group-item active">
+    <h4 class="list-group-item-heading">{{feedback.Q2}} </h4>
+    <p class="list-group-item-text">{{feedback.A2}} </p>
+  </a>
+</div>
+
+<div class="list-group">
+  <a href="#" class="list-group-item active">
+    <h4 class="list-group-item-heading">{{feedback.Q3}} </h4>
+    <p class="list-group-item-text">{{feedback.A3}} </p>
+  </a>
+</div>
+<div class="list-group">
+  <a href="#" class="list-group-item active">
+    <h4 class="list-group-item-heading">{{feedback.Q4}} </h4>
+    <p class="list-group-item-text">{{feedback.A4}} </p>
+  </a>
+</div>
+  </div>
+</div>
+</div>
+{% endblock %}

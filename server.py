@@ -12,6 +12,7 @@ from email_template import EmailTemplate
 from sqlalchemy.ext.serializer import loads, dumps
 import json
 from sqlalchemy.ext import serializer
+from sm_response_api import get_sm_survey_respondent_ids,get_sm_survey_response
 
 app = Flask(__name__)
 
@@ -282,8 +283,9 @@ def signup_process():
 		# Finding the minimum reistration for an event id with waitlisted status
 		waitlisted_regid = db.session.query(func.min(Registration.registration_id).label('min_reg_id')).filter( event_id==event_id,Registration.status == 'Waitlisted').one()
 		# Bringing the whole record(object)
-		
-		# If a user is not 
+		# When the cancel is happening
+		# update the database column no_of_spots decrement by 1
+		# If a user is not in the waitlist
 		if not waitlisted_regid:
 			update_no_of_spots = Event.query.get(event_id)
 			update_no_of_spots.no_of_reg_spots -= 1
@@ -294,10 +296,7 @@ def signup_process():
 			who_is_waitlisted = Registration.query.filter(Registration.registration_id== waitlisted_regid.min_reg_id ).one()
 			who_is_waitlisted.status = 'Registered'
 			update_no_of_waitspots = Event.query.get(event_id)
-	
-		# When the cancel is happening
-		# update the database column no_of_spots by 1
-
+			update_no_of_waitspots.no_of_waitlist_spots -=1
 		
 		db.session.commit()
 	    
@@ -426,6 +425,15 @@ def signup_page():
 @app.route("/school_events")
 def school_events():
 	return render_template('school_events.html')
+
+
+@app.route("/survey_feedback")
+def survey_feedback():
+	print "I am in feedback"
+	# Calling sm api to get responses for the survey on the welcome page
+	feedback = get_sm_survey_response(68255536)
+	return render_template('feedback.html', feedback = feedback)
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

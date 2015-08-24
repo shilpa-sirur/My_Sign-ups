@@ -129,8 +129,8 @@
 <div class="col-xs-12" id="PastEventDataTable">
 
   <table class="table table-hover">
-        <div class="Title">
-    <h3>Past Events</h3>
+        <div class="col-xs-12" class="Title">
+        <h3>Past Events</h3>
   </div>
       <thead> 
           <th style="display: none">Event Id</th>
@@ -138,8 +138,7 @@
           <th>Event Description</th>
           <th>Event Date</th>
           <th>Event Status</th>
-          <th>Attended</th>
-          <th>Feedback Survey</th>
+          <th>Attended</th>          
       </thead>
     {% for item in past_sign_up %}
       <tr>
@@ -149,7 +148,6 @@
           <td id="eventdate">{{ item.event_date }}</td>
           <td id="regstatus">{{ item.event_status }}</td>
           <td id="showup">{{ item.showup }}</td>
-          <td> <a href="https://www.surveymonkey.com/s/ZMCP6HN"> <span class="glyphicon glyphicon-comment"></span> </td></a>
       </tr>
     {% endfor %}    
 </div>
@@ -230,6 +228,16 @@
         {
 
           alert('Hello')
+});
+
+
+$('#feedback').on('click', { data : "test" } , function()
+  { 
+  alert('Hello feedback')
+  $.get('/survey_feedback', function (results) {
+          alert ( results)
+        }); 
+
 });
 
 </script>
