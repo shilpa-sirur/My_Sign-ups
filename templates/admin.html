@@ -3,18 +3,40 @@
 </head>
 
 
-{% extends 'base1.html' %}
+{% extends 'base2.html' %}
 {% block content %}
-<div class = adminwelcome>
-  <h1> Welcome {{ user.first_name }}  {{user.last_name }}!</h1>
-</div>  
 
+<div class = adminwelcome >
+  <h1> Welcome {{ user.first_name }}  {{user.last_name }}!</h1>
+</div> 
+
+<!-- Doughnut chart -->
+<div class="col-xs-10">
+
+{% for item in sign_up %}
+
+<div class="col-xs-2">
+      <!-- Creating a canvas id for each tuple in the sign_up object-->
+      <div class="check" id="canvas-holder">
+          <canvas id="{{item.event_id}}" width="110px" height="110px"/ >
+      </div>
+      <!-- Writing the event name below each doughnut chart -->
+      <div style="text-align: center" >
+        <h6>{{item.event_name}}</h6>
+    </div>   
+</div>
+    {% endfor %} 
+</div>
+
+
+<!-- Creating an upcoming events table for the admin tabe-->
 <div class="col-xs-12" id="EventDataTable">
       <div class ="Title">
         <caption>Upcoming Volunteer Events</caption>
       </div>
       <table class ="table table-hover" id="AdminEvent">  
         <thead>
+          <th class="EventDataCell"> </th>
            <th style="display: none" class="EventDataCell">Event Id</th>
            <th class="EventDataCell">Event Name</th>
            <th class="EventDataCell">Event Description</th>
@@ -27,20 +49,24 @@
           <th class="EventDataCell">Action </th>
         </thead>   
       {% for item in sign_up %}
+      <!-- Looping in the sign_up object list over value tuples-->
         <tr class="EventDataRow">
+          <td class="EventDataCell" id="delete"><span class="glyphicon glyphicon-minus-sign"></span></td>
           <td style="display: none" class ="EventDataCell" id="eventid">{{ item.event_id }}</td>
           <td class="EventDataCell" id="eventname">{{ item.event_name }}</td>
           <td class="EventDataCell" id="eventdesc">{{item.event_description}}</td>
           <td class="EventDataCell" id="eventdate">{{ item.event_date }}</td>
           <td class="EventDataCell" id="eventstatus">{{ item.event_status }}</td>
           <td class="EventDataCell" id="noofspots">{{ item.no_of_spots }}</td>
-          <td class="EventDataCell" id="noofspots">{{ item.no_of_reg_spots }}</td>
-          <td class="EventDataCell" id="noofspots">{{ item.no_of_waitlist_spots }}</td>
+          <td class="EventDataCell" id="noofregspots">{{ item.no_of_reg_spots }}</td>
+          <td class="EventDataCell" id="noofwaitspots">{{ item.no_of_waitlist_spots }}</td>
+        <!-- Adding the Edit button for Admin flow--> 
          <td class="EventDataCell"> <span class="glyphicon glyphicon-pencil"></span> <button class="edit">Edit Event</button></td>
         </tr>
     {% endfor %}    
 </tr>
 
+<!-- Adding the Add button for Admin flow-->
 <div align='Right'>
     <span class="glyphicon glyphicon-plus"></span> <button class="btn btn-danger" id="add">Add Event</button>
 </div>    
@@ -48,6 +74,36 @@
 <script src="static/jquery.js"></script>
 
  <script type="text/javascript">
+// Looping and passing data to each doughnut chart as a value for each event
+        {% for item in sign_up %}
+
+    var data{{item.event_id}} = [
+        {
+          value: {{item.filluppercent}},
+          color: "#46BFBD",
+          highlight: "#5AD3D1",
+          label: "{{item.event_name}}"
+        },
+        {
+          value: 100 - {{item.filluppercent}},
+          color: "#949FB1",
+          highlight: "#A8B3C5",
+          label: "Remaining"
+        }
+      ];
+ 
+      {% endfor %}
+
+      window.onload = function(){
+
+      {% for item in sign_up %}
+//printing a doughnut chart taking each tuple in the sign_up object      
+        var ctx = document.getElementById("{{item.event_id}}").getContext("2d");
+        window.myDoughnut = new Chart(ctx).Doughnut(data{{item.event_id}}, {responsive : true});
+
+      {% endfor %}
+ 
+      };
 
 
 $("body").delegate(".edit", "click",function()
@@ -95,7 +151,7 @@ $('#add').on('click', function(){
     
       alert("New event")
       // Create tds as editable values and assign it to a variable
-      newRow = '<td class ="EventDataCell" id="eventid" contenteditable="true" ></td><td class="EventDataCell" id="eventname" contenteditable="true"></td><td class="EventDataCell" id="eventdesc" contenteditable="true"></td><td class="EventDataCell" id="eventdate" contenteditable="true"></td><td class="EventDataCell" id="eventstatus" contenteditable="true"></td><td class="EventDataCell" id="noofspots" contenteditable="true"></td><td class="EventDataCell"><span class="glyphicon glyphicon-pencil"></span> <button class="edit">Save</button></td>'
+      newRow = '<td style="display: none" class ="EventDataCell" id="eventid" contenteditable="true" >0</td><td class="EventDataCell" id="eventname" contenteditable="true"></td><td class="EventDataCell" id="eventdesc" contenteditable="true"></td><td class="EventDataCell" id="eventdate" contenteditable="true"></td><td class="EventDataCell" id="eventstatus" contenteditable="true"></td><td class="EventDataCell" id="noofspots" contenteditable="true"></td><td class="EventDataCell" id="noofregspots" contenteditable="false"></td><td class="EventDataCell" id="noofwaitspots" contenteditable="false"></td><td class="EventDataCell"><span class="glyphicon glyphicon-pencil"></span> <button class="edit">Save</button></td>'
         //Create an empty <tr> element
         row = $('<tr class="EventDataCell" ></tr>');
         //Adding the variable holding the td values under thr tr element and add that tr with the tds to the 1st position of the table:
@@ -103,7 +159,8 @@ $('#add').on('click', function(){
         // this references to the Save Event button in that first row whose parent is EventDataCell and whose siblings all the above tds and then we find the #eventid first element in that first row to focus
         $(this).parent().siblings().find("#eventid").focus();       
 
-      alert ("I am done adding") 
+      alert ("I am done adding")
+
   // }         
 });
 

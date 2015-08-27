@@ -77,16 +77,20 @@ def get_sm_survey_response(surveyid):
 	Que4 = output["data"][0]["questions"][5]["question_id"]
 	Ans4 = output["data"][0]["questions"][5]["answers"][0]["text"]
 
-	sm_survey_output[ "Q1" ] =  sm_survey_metadata[Que1] 
-	sm_survey_output[ "Q2" ] =  sm_survey_metadata[Que2]
-	sm_survey_output[ "Q3" ] =  sm_survey_metadata[Que3]
-	sm_survey_output[ "Q4" ] =  sm_survey_metadata[Que4]
-	sm_survey_output[ "A1" ] =  Ans1 
-	sm_survey_output[ "A2" ] =  sm_survey_metadata[Ans2]
-	sm_survey_output[ "A3" ] =  sm_survey_metadata[Ans3]
-	sm_survey_output[ "A4" ] =  Ans4
+	sm_survey_output["Q1"] = Que1
+	sm_survey_output["Q2"] = sm_survey_metadata[Que2]
+	sm_survey_output["Q3"] = sm_survey_metadata[Que3]
+	sm_survey_output["Q4"] = sm_survey_metadata[Que4]
+	sm_survey_output["A1"] = Ans1 
+	sm_survey_output["A2"] = sm_survey_metadata[Ans2]
+	sm_survey_output["A3"] = sm_survey_metadata[Ans3]	
+	sm_survey_output["A4"] = Ans4
+
+	# sm_survey_output[ sm_survey_metadata[Que1]] =  Ans1 
+	# sm_survey_output[ sm_survey_metadata[Que2]] =  sm_survey_metadata[Ans2]
+	# sm_survey_output[ sm_survey_metadata[Que3]] =  sm_survey_metadata[Ans3]
+	# sm_survey_output[ sm_survey_metadata[Que4]] =  Ans4
 	
 	return sm_survey_output
 
-print get_sm_survey_response(123)
-#print get_sm_survey_respondent_ids(123)
+print get_sm_survey_response(68255536)

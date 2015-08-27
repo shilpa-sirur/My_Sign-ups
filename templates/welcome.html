@@ -178,6 +178,7 @@
         alert('Hello')
       
         eveid=$(this).parent().siblings('#eventid').text();
+        console.log(eveid)
         var row = $(this).closest('tr'),
         eveid = $(row).find('#eventid').text();
         evename = $(row).find('#eventname').text();
