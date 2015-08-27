@@ -63,34 +63,37 @@ def get_sm_survey_response(surveyid):
 
 	uri = "%s%s" % (HOST, SURVEY_LIST_ENDPOINT)
 
-	data = {"survey_id": "68255536" , "respondent_ids" : ["4155590255"]}
+	respondent_ids = get_sm_survey_respondent_ids (68255536) 
+	print respondent_ids
+	data = {"survey_id": "68255536" , "respondent_ids" : respondent_ids}
 	response = client.post(uri, data=json.dumps(data))
 	output = response.json()
+
 	#survey_list = response_json["data"]
+	response_output=[]
+        for i in range(len(output["data"])):
+           	#print i
+           	Que1 = output["data"][i]["questions"][0]["question_id"]
+           	Ans1 = output["data"][i]["questions"][0]["answers"][0]["text"]
+           	Que2 = output["data"][i]["questions"][1]["question_id"]
+           	Ans2 = output["data"][i]["questions"][1]["answers"][0]["row"]
+           	Que3 = output["data"][i]["questions"][2]["question_id"]
+           	Ans3 = output["data"][i]["questions"][2]["answers"][0]["row"]
+           	Que4 = output["data"][i]["questions"][5]["question_id"]
+           	Ans4 = output["data"][i]["questions"][5]["answers"][0]["text"]
+            
+           	sm_survey_output["Q1"] = sm_survey_metadata[Que1]
+           	sm_survey_output["A1"] = Ans1 
+           	sm_survey_output["Q2"] = sm_survey_metadata[Que2] 
+           	sm_survey_output["A2"] = sm_survey_metadata[Ans2]
+           	sm_survey_output["Q3"] = sm_survey_metadata[Que3]
+           	sm_survey_output["A3"] = sm_survey_metadata[Ans3]
+           	sm_survey_output["Q4"] = sm_survey_metadata[Que4]
+           	sm_survey_output["A4"] = Ans4
+           	
+           	response_output.append(sm_survey_output.copy())
+    		print response_output       	
+	return response_output
 
-	Que1 = output["data"][0]["questions"][0]["question_id"]
-	Ans1 = output["data"][0]["questions"][0]["answers"][0]["text"]
-	Que2 = output["data"][0]["questions"][1]["question_id"]
-	Ans2 = output["data"][0]["questions"][1]["answers"][0]["row"]
-	Que3 = output["data"][0]["questions"][2]["question_id"]
-	Ans3 = output["data"][0]["questions"][2]["answers"][0]["row"]
-	Que4 = output["data"][0]["questions"][5]["question_id"]
-	Ans4 = output["data"][0]["questions"][5]["answers"][0]["text"]
-
-	sm_survey_output["Q1"] = Que1
-	sm_survey_output["Q2"] = sm_survey_metadata[Que2]
-	sm_survey_output["Q3"] = sm_survey_metadata[Que3]
-	sm_survey_output["Q4"] = sm_survey_metadata[Que4]
-	sm_survey_output["A1"] = Ans1 
-	sm_survey_output["A2"] = sm_survey_metadata[Ans2]
-	sm_survey_output["A3"] = sm_survey_metadata[Ans3]	
-	sm_survey_output["A4"] = Ans4
-
-	# sm_survey_output[ sm_survey_metadata[Que1]] =  Ans1 
-	# sm_survey_output[ sm_survey_metadata[Que2]] =  sm_survey_metadata[Ans2]
-	# sm_survey_output[ sm_survey_metadata[Que3]] =  sm_survey_metadata[Ans3]
-	# sm_survey_output[ sm_survey_metadata[Que4]] =  Ans4
-	
-	return sm_survey_output
-
-print get_sm_survey_response(68255536)
+#print get_sm_survey_response(123)
+#print get_sm_survey_respondent_ids(123)

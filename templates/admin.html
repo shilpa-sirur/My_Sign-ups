@@ -51,7 +51,7 @@
       {% for item in sign_up %}
       <!-- Looping in the sign_up object list over value tuples-->
         <tr class="EventDataRow">
-          <td class="EventDataCell" id="delete"><span class="glyphicon glyphicon-minus-sign"></span></td>
+          <td class="EventDataCell" ><span id="delete" class="glyphicon glyphicon-minus-sign"></span></td>
           <td style="display: none" class ="EventDataCell" id="eventid">{{ item.event_id }}</td>
           <td class="EventDataCell" id="eventname">{{ item.event_name }}</td>
           <td class="EventDataCell" id="eventdesc">{{item.event_description}}</td>
@@ -151,7 +151,7 @@ $('#add').on('click', function(){
     
       alert("New event")
       // Create tds as editable values and assign it to a variable
-      newRow = '<td style="display: none" class ="EventDataCell" id="eventid" contenteditable="true" >0</td><td class="EventDataCell" id="eventname" contenteditable="true"></td><td class="EventDataCell" id="eventdesc" contenteditable="true"></td><td class="EventDataCell" id="eventdate" contenteditable="true"></td><td class="EventDataCell" id="eventstatus" contenteditable="true"></td><td class="EventDataCell" id="noofspots" contenteditable="true"></td><td class="EventDataCell" id="noofregspots" contenteditable="false"></td><td class="EventDataCell" id="noofwaitspots" contenteditable="false"></td><td class="EventDataCell"><span class="glyphicon glyphicon-pencil"></span> <button class="edit">Save</button></td>'
+      newRow = '<td class="EventDataCell" ><span id="delete" class="glyphicon glyphicon-minus-sign"></span></td><td style="display: none" class ="EventDataCell" id="eventid" contenteditable="true" >0</td><td class="EventDataCell" id="eventname" contenteditable="true"></td><td class="EventDataCell" id="eventdesc" contenteditable="true"></td><td class="EventDataCell" id="eventdate" contenteditable="true"></td><td class="EventDataCell" id="eventstatus" contenteditable="true"></td><td class="EventDataCell" id="noofspots" contenteditable="true"></td><td class="EventDataCell" id="noofregspots" contenteditable="false"></td><td class="EventDataCell" id="noofwaitspots" contenteditable="false"></td><td class="EventDataCell"><span class="glyphicon glyphicon-pencil"></span> <button class="edit">Save</button></td>'
         //Create an empty <tr> element
         row = $('<tr class="EventDataCell" ></tr>');
         //Adding the variable holding the td values under thr tr element and add that tr with the tds to the 1st position of the table:
@@ -163,6 +163,15 @@ $('#add').on('click', function(){
 
   // }         
 });
+
+
+
+$('#delete').on('click', function(){
+    
+      alert("Any event delete")
+      // Create tds as editable values and assign it to a variable        
+});
+
 
 
 

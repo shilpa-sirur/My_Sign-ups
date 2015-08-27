@@ -68,7 +68,7 @@ def login_process():
 				mandated = db.session.query(Parent_Child.parent_id,label('children',func.count(Parent_Child.student_id))).group_by(Parent_Child.parent_id).filter_by(parent_id=parent).first()
 				print mandated
 				
-				#why are we querying for children and how
+				#querying for children 
 				children = db.session.query(Student.student_id,Student.first_name,Student.last_name,Student.grade,Student.year_joined,Student.status ).join(Parent_Child).filter(Parent_Child.parent_id==parent).all()
 				#if there is None for the mandated from the database
 				if mandated is not None:
@@ -77,7 +77,7 @@ def login_process():
 					total_hours = 0
 				#print total_hours
 
-				# why are we querying for completed and how
+				#querying for completed hours
 				completed = db.session.query(Registration.parent_id,label('slots',func.count(Registration.slot_id))).group_by(Registration.parent_id).filter_by(parent_id=parent , showup='Yes').first()
 				
 				# print completed
@@ -273,10 +273,10 @@ def signup_process():
 		# print "Shilpa updating count"
 		# print update_no_of_reg_spots.no_of_reg_spots
 	else:
-		# Checking if the op = "cancel"
-		# print "Inside else block"
-		# print event_id
-		# print parent_id
+		#Checking if the op = "cancel"
+		print "Inside else block"
+		print event_id
+		print parent_id
 
 		update_reg_status = Registration.query.filter_by(event_id=event_id,parent_id=parent_id).one()
 		update_reg_status.status = 'Cancelled'
@@ -286,7 +286,8 @@ def signup_process():
 		# When the cancel is happening
 		# update the database column no_of_spots decrement by 1
 		# If a user is not in the waitlist
-		if not waitlisted_regid:
+		if  waitlisted_regid:
+			print "I am in null"
 			update_no_of_spots = Event.query.get(event_id)
 			update_no_of_spots.no_of_reg_spots -= 1
 		else :
@@ -361,7 +362,7 @@ def admin_page():
 	event_count = Event.query.filter_by(event_id=event_id).count()
 	print event_count
 	if event_count == 0 :
-		new_event = Event(event_name=event_name,event_date=datetime.strptime(event_date , '%Y-%m-%d'),event_length=1,event_description=event_description,event_status=event_status,no_of_spots=event_spots,recurring='Yes' ,created_id=500 )
+		new_event = Event(event_name=event_name,event_date=datetime.strptime(event_date , '%Y-%m-%d'),event_length=1,event_description=event_description,event_status=event_status,no_of_spots=event_spots,no_of_reg_spots=0,no_of_waitlist_spots=0,recurring='Yes' ,created_id=500 )
 		print "I am inside insert *****************************"
 		print event_name
 		print datetime
