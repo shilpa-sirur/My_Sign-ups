@@ -449,7 +449,46 @@ def survey_feedback():
 	# print "I am in feedback"
 	# Calling sm api to get responses for the survey on the welcome page
 	feedback = get_sm_survey_response(68255536)
-	return render_template('feedback.html', feedback = feedback)
+	return render_template('feedback.html', user=session["user_id"], feedback = feedback)
+
+
+#This is the route to delete an event by admin
+@app.route('/admin_event_delete', methods=['POST'])
+def event_delete():
+	print "I am here"
+	emailtobenotified=""
+	event_id = request.form['eventid']
+	event_tobe_deleted = Event.query.filter_by(event_id=event_id).one()
+	event_tobe_deleted.event_status = "Deleted"
+	registration_tobe_deleted = db.session.query(Registration.registration_id,Registration.event_id,Registration.parent_id,User.email_address).join(User).filter(Registration.event_id==event_id,Registration.status != 'Cancelled').all()	
+	if not registration_tobe_deleted:
+		print "No registration for this event"
+	else:
+		registrationdelete = db.session.query(Registration).filter(Registration.event_id==event_id,Registration.status != 'Cancelled').all()
+		for regi in registration_tobe_deleted:
+			registration = Registration.query.get(regi.registration_id)
+			registration.status ="Deleted"
+			emailtobenotified+= regi.email_address
+			print emailtobenotified
+			eventmessage = {}
+			eventmessage['eventname'] = event_tobe_deleted.event_name
+			eventmessage['eventdate'] = event_tobe_deleted.event_date.strftime("%B %d, %Y")
+			eventmessage['eventdesc'] = event_tobe_deleted.event_description
+ 		
+ 		# print eventmessage
+
+ 		# print ('before sending email template email')
+
+			templateobj = EmailTemplate(template_name='cancellation.txt', values=eventmessage)
+			message = templateobj.render()
+			print "I am here ********************************************"
+			send_notification(regi.email_address,registerDelete,message)
+	
+	db.session.commit()
+
+	print emailtobenotified
+
+	return "Sucess"	
 
 
 if __name__ == "__main__":
@@ -463,6 +502,7 @@ if __name__ == "__main__":
     DebugToolbarExtension(app)
     registerSub = "Your Registration is Successful"
     registerCancel = "Your Registration is Cancelled"
+    registerDelete = "The Event is Cancelled"
     EventChange = "Please note change in your registered event"
 
 
