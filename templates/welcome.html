@@ -5,69 +5,87 @@
 {% block content %}
 
 <!--Getting user details from datbase and -->
-<div class= "col-xs-4">
+<div class= "col-xs-6">
  
- <div class="panel panel-primary">
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Profile Details</h3>
+  </div>
   <div class="panel-body">
 
- <ul class="list-inline">
+ <ul>
   <li>
-    <address>
-      <a href="mailto:#">{{ user.email_address }}</a>
-      <strong>Need Reminder : </strong>
-      {{ user.reminder }}
-    </address>  
+      <strong>Email : </strong><a href="mailto:#">{{ user.email_address }}</a><br>
+  </li>
+ 
+  <li>
+      <strong>Address :</strong> {{ user.user_address}}<br>
+   </li>
+   <li>   <strong>Phone #: </strong> {{ user.phone_number }}
   </li>
   <li>
+      <strong>Need Reminder : </strong> {{ user.reminder }}
+  </li>
+   <li>
+      <strong>Need to complete  : </strong> {{ mandated }} hrs
+  </li>
+   </ul>         
+</div>
+</div>
+</div>
 
-    <address>
-      <strong>Address :</strong> {{ user.user_address}}<br>
-      <abbr title="Phone"><strong>Phone #: </strong></abbr> {{ user.phone_number }}
-    </address>  
-
-    </li>
-  </ul>         
-</div>
-</div>
-</div>
 <div class= "col-xs-4">
 
-<div class="panel panel-primary">
-  <div class="panel-body">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Children Information</h3>
+    </div>
+      <div class="row">
+          {% for item in children %}
+          <div class="col-xs-6">
+             <div class="thumbnail">
+            <h4> {{item.first_name }} {{ item.last_name}}</h4>
+            <ul>
 
-  <ul class="list-inline">
-      {% for item in children %}
-    <li>
-      <span class="glyphicon glyphicon-picture"></span>
-      <br>
-      <address>
-        <strong>{{item.first_name }} {{ item.last_name}}</strong><br>
-        Grade : {{item.grade }} <br>
-        Joined : {{item.year_joined }}<br>
-      </address>
-      </li>
-      {% endfor %}    
-    </ul>
-</div>
-</div>
-</div>
-<div class = "col-xs-1">   
-  <div class="panel panel-primary">
-    <div class="panel-heading">Mandated </div>
-    <div class="panel-body">
-       <h4>{{ mandated }} </h4>
-    </div>
+            <li>  <strong> Grade : </strong>{{item.grade }} 
+            </li>
+            <li>  <strong> Joined :</strong> {{item.year_joined }}
+            </li>
+            <li>  <strong> Status :</strong> {{item.status }}
+            </li>
+           </ul>
+              </div>
+          </div>
+         {% endfor %}    
+      </div>
   </div>
 </div>
-<div class = "col-xs-1">   
-   <div class="panel panel-primary">
-    <div class="panel-heading">Completed </div>
-    <div class="panel-body">
-      <h4>{{completed}} </h4>
-    </div>
-  </div>
-</div> 
-<div class = "col-xs-2">   
+
+
+
+<!-- Doughnut chart -->
+
+
+<div class="col-xs-2">
+      <!-- Creating a canvas id-->
+      <div class="check" id="canvas-holder">
+          <canvas id="userdonut" width="110px" height="110px"/ >
+      </div>
+      <!-- Writing the event name below each doughnut chart -->
+      <div style="text-align: center" >
+        <h6>{{user.first_name}}{{user.last_name}}</h6>
+    </div>   
+</div>
+
+
+
+
+
+
+
+
+
+<!--<div class = "col-xs-2">   
   <div class="panel panel-primary">
     <div class="panel-heading">Progress</div>
     <div class="panel-body">
@@ -77,7 +95,7 @@
       </div>
     </div>
   </div>
-</div> 
+</div>--> 
 
 <!--Creating a upcoming events table-->
 <div class="col-xs-12" id="EventDataTable">
@@ -151,27 +169,50 @@
 <script src="static/jquery.js"></script>
 
   <script type="text/javascript">
+// Passing values to the doughnut chart on welocome for a user 
+//with completed,mandated hours,progress bar
+  var userdata = [
+        {
+          value: {{completed}},
+          color: "#46BFBD",
+          highlight: "#5AD3D1",
+          label: "Completed"
+        },
+        {
+          value: {{remaining_hours}},
+          color: "#949FB1",
+          highlight: "#A8B3C5",
+          label: "Remaining"
+        }
+      ];
+ 
+ window.onload = function(){
 
-  $(document).ready(function(){ 
+//printing a doughnut chart taking each tuple in the sign_up object      
+        var ctx = document.getElementById("userdonut").getContext("2d");
+        window.myDoughnut = new Chart(ctx).Doughnut(userdata, {responsive : true}); 
+      };
+
+//   $(document).ready(function(){ 
       
-      alert({{percentcomplete}})
+//       // alert({{percentcomplete}})
 
-      $('.progress-bar').css('width', {{percentcomplete}}+'%').attr('aria-valuenow', {{percentcomplete}});
+//       $('.progress-bar').css('width', {{percentcomplete}}+'%').attr('aria-valuenow', {{percentcomplete}});
       
-      if ({{percentcomplete}} <= 10) {x="progress-bar progress-bar-danger"}
-      else if({{percentcomplete}} >10 && {{percentcomplete}} <30) {x="progress-bar progress-bar-warning"} 
-      else if({{percentcomplete}} >30 && {{percentcomplete}} <60) {x="progress-bar progress-bar-info"} 
-      else if({{percentcomplete}} >60) {x= "progress-bar progress-bar-success"}
-      else{x="progress-bar"}  
-        // Make some jQuery call.
+//       if ({{percentcomplete}} <= 10) {x="progress-bar progress-bar-danger"}
+//       else if({{percentcomplete}} >10 && {{percentcomplete}} <30) {x="progress-bar progress-bar-warning"} 
+//       else if({{percentcomplete}} >30 && {{percentcomplete}} <60) {x="progress-bar progress-bar-info"} 
+//       else if({{percentcomplete}} >60) {x= "progress-bar progress-bar-success"}
+//       else{x="progress-bar"}  
+//         // Make some jQuery call.
 
-       $('.progress-bar').attr('class', x ); 
-});
+//        $('.progress-bar').attr('class', x ); 
+// });
     // This is a function to change the status of the Sign up button
     $('#EventDataTable').on('click', '.btn', function()
         {
 
-        alert('Hello')
+        // alert('Hello')
       
         eveid=$(this).parent().siblings('#eventid').text();
         console.log(eveid)
@@ -191,18 +232,18 @@
         else if($(this).attr('id')=="cancel"){
           op = "cancel"}
 
-        alert (op)
+        // alert (op)
         // Upadting the database with the parent_id and event_id that the user has registered for via AJAX
         $.post('/event_signup_confirmed', { userid: userid, eventid: eveid, opcode:op }, function (results) {
           //var adjective = results;
 
-          alert ( "printing status")
+          // alert ( "printing status")
           //$("#eventstatus).text()
 
           console.log($(row) )
           //
 
-          alert(results.json_list.no_of_waitlisted )
+          // alert(results.json_list.no_of_waitlisted )
 
           //everegstatus=$(row).find('#regstatus');
           //alert ( "printing event id")
@@ -224,15 +265,15 @@
     $('#btn btn-primary').on('click', '.btn', function()
         {
 
-          alert('Hello')
+          // alert('Hello')
 });
 
 
 $('#feedback').on('click', { data : "test" } , function()
   { 
-  alert('Hello feedback')
+  // alert('Hello feedback')
   $.get('/survey_feedback', function (results) {
-          alert ( results)
+          // alert ( results)
         }); 
 
 });
