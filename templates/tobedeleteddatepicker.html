@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <title>My Sign-ups</title>
+  <link rel="stylesheet" href="/Users/shilpas/Desktop/Hackbright/Programming/HB_Project/static/css/style.css">
+  <link rel="stylesheet" href="/Users/shilpas/Desktop/Hackbright/Programming/HB_Project/static/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/Users/shilpas/Desktop/Hackbright/Programming/HB_Project/static/bootstrap/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="/Users/shilpas/Desktop/Hackbright/Programming/HB_Project/static/datepicker/css/datepicker.css">
+
+  <script src="/Users/shilpas/Desktop/Hackbright/Programming/HB_Project/static/jquery.min.js"></script>
+  <script src="/Users/shilpas/Desktop/Hackbright/Programming/HB_Project/static/bootstrap/js/bootstrap.min.js"></script> 
+  <script src="/Users/shilpas/Desktop/Hackbright/Programming/HB_Project/static/datepicker/js/bootstrap-datepicker.js"></script> 
+</head>
+
+<body><div class="container">
+    <div class="row">
+        <div class='col-sm-6'>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker1'>
+                    <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                $('#datetimepicker1').datetimepicker();
+            });
+        </script>
+    </div>
+</div>
+</body>
+</html>

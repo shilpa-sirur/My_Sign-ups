@@ -13,6 +13,7 @@ from sqlalchemy.ext.serializer import loads, dumps
 import json
 from sqlalchemy.ext import serializer
 from sm_response_api import get_sm_survey_respondent_ids,get_sm_survey_response
+from create_event import get_credentials,create_event
 
 app = Flask(__name__)
 
@@ -365,13 +366,41 @@ def admin_page():
 		new_event = Event(event_name=event_name,event_date=datetime.strptime(event_date , '%Y-%m-%d'),event_length=1,event_description=event_description,event_status=event_status,no_of_spots=event_spots,no_of_reg_spots=0,no_of_waitlist_spots=0,recurring='Yes' ,created_id=500 )
 		print "I am inside insert *****************************"
 		print event_name
-		print datetime
+		print event_date
 		print event_description
 		print event_status
 		print event_spots
+		print "########*********************************************************"
 
+		eventmessage = {}
+		eventmessage['eventname'] = event_name
+		eventmessage['eventdate'] = event_date
+		eventmessage['eventdesc'] = event_description
+		print "*********************************************************########"
+		
 		db.session.add(new_event)
+
 		db.session.commit()
+		
+		print eventmessage
+
+		templateobj = EmailTemplate(template_name='eventadd.txt', values=eventmessage)
+		message = templateobj.render()
+
+ 		usertobenotified = User.query.filter_by(reminder="Yes").all()
+
+		for user in usertobenotified:
+			print user.email_address
+			send_notification(user.email_address,Eventadd,message)
+ 		
+		print message
+		create_event(event_name,event_date,event_description)
+ 		# print eventmessage
+
+ 		# print ('before sending email template email')
+
+		print "I am here ********************************************"
+	
 		return "The event is updated"
 
 	else:
@@ -441,7 +470,7 @@ def signup_page():
 
 @app.route("/school_events")
 def school_events():
-	return render_template('school_events.html')
+	return render_template('school_events.html',user=session["user_id"])
 
 
 @app.route("/survey_feedback")
@@ -492,7 +521,7 @@ def event_delete():
 
 
 if __name__ == "__main__":
-    # We have to set debug=True here, since it has to be True at the point
+    # We have to set debug=True here, since it has to be True at the pointyu	q
     # that we invoke the DebugToolbarExtension
     app.debug = False
 
@@ -504,6 +533,8 @@ if __name__ == "__main__":
     registerCancel = "Your Registration is Cancelled"
     registerDelete = "The Event is Cancelled"
     EventChange = "Please note change in your registered event"
+    Eventadd = "Please note change a new event is added"
+    Eventdelete = "Please note this event is deleted"
 
 
     app.run()    
