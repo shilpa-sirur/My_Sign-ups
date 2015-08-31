@@ -14,6 +14,8 @@ import json
 from sqlalchemy.ext import serializer
 from sm_response_api import get_sm_survey_respondent_ids,get_sm_survey_response
 from create_event import get_credentials,create_event
+from sqlalchemy import desc
+from send_sms import send_twillio_sms
 
 app = Flask(__name__)
 
@@ -58,9 +60,10 @@ def login_process():
 			# print user.user_type
 			# Checking if the user is Admin or a User
 			if user.user_type == 'Admin':
-				sign_up = db.session.query(Event.event_id,Event.event_name,Event.event_description,Event.event_date,Event.event_status,Event.no_of_spots, Event.no_of_reg_spots,Event.no_of_waitlist_spots, label('filluppercent',((Event.no_of_reg_spots + Event.no_of_waitlist_spots)*100 )/Event.no_of_spots)).filter(Event.event_date >= date.today() ).all()
-  				
-		   		return render_template("admin.html",user=user,sign_up=sign_up)
+				sign_up = db.session.query(Event.event_id,Event.event_name,Event.event_description,Event.event_date,Event.event_status,Event.no_of_spots, Event.no_of_reg_spots,Event.no_of_waitlist_spots, label('filluppercent',((Event.no_of_reg_spots + Event.no_of_waitlist_spots)*100 )/Event.no_of_spots)).order_by(asc(Event.event_date)).filter(Event.event_date >= date.today() ).all()
+				user_registration = Registration.query.filter_by(showup="Yes").subquery()
+				past_sign_up = db.session.query(Event.event_id,Event.event_name,Event.event_description,Event.event_date,Event.event_status,Event.no_of_spots, Event.no_of_reg_spots,Event.no_of_waitlist_spots, func.sum(user_registration.c.slot_id).label("Attended")).order_by(asc(Event.event_date)).outerjoin(user_registration,Event.event_id==user_registration.c.event_id).filter(Event.event_date < date.today() ).all()
+		   		return render_template("admin.html",user=user,sign_up=sign_up,past_sign_up=past_sign_up)
 		   	else:
 		   		# Get the user_id(parent_id with the user object)
 				parent = user.user_id
@@ -109,9 +112,10 @@ def login_process():
 				user_registration = Registration.query.filter_by(parent_id=parent).subquery()
 				print user_registration
 				
-				sign_up = db.session.query(Event.event_id,Event.event_name,Event.event_description,Event.event_date,Event.event_status,label('no_of_remaining_spots',Event.no_of_spots - Event.no_of_reg_spots),user_registration.c.parent_id,user_registration.c.status).outerjoin(user_registration,Event.event_id==user_registration.c.event_id).filter(Event.event_date >= date.today() ).all()
+				sign_up = db.session.query(Event.event_id,Event.event_name,Event.event_description,Event.event_date,Event.event_status,label('no_of_remaining_spots',Event.no_of_spots - Event.no_of_reg_spots),user_registration.c.parent_id,user_registration.c.status).order_by(asc(Event.event_date)).outerjoin(user_registration,Event.event_id==user_registration.c.event_id).filter(Event.event_date >= date.today() ).all()
 				print sign_up
-				past_sign_up = db.session.query(Event.event_id,Event.event_name,Event.event_description,Event.event_date,Event.event_status,Registration.slot_id  ,Registration.showup).join(Registration).filter(Registration.parent_id==parent,Event.event_date <= date.today() ).all()
+				past_sign_up = db.session.query(Event.event_id,Event.event_name,Event.event_description,Event.event_date,Event.event_status,Event.no_of_spots, Event.no_of_reg_spots,Event.no_of_waitlist_spots,Registration.showup).join(Registration).order_by(asc(Event.event_date)).outerjoin(user_registration,Event.event_id==user_registration.c.event_id).filter(Event.event_date < date.today()).all()
+
 				
 				# print "before render_template"
 				# print children
@@ -299,7 +303,9 @@ def signup_process():
 			who_is_waitlisted.status = 'Registered'
 			update_no_of_waitspots = Event.query.get(event_id)
 			update_no_of_waitspots.no_of_waitlist_spots -=1
-		
+			who_is_waitlisted_user = User.query.filter_by(user_id = who_is_waitlisted.parent_id).one()
+			sms_message = "Dear "+who_is_waitlisted_user.first_name+" "+who_is_waitlisted_user.last_name+" Your reservaton for event "+update_no_of_waitspots.event_name+" on "+update_no_of_waitspots.event_date.strftime("%B %d, %Y")+" has bee confirmed. Please make changes by signing to MySignUp application. Enjoy and Engage with kids - MySignUp Team"
+			send_twillio_sms(sms_message,who_is_waitlisted_user.phone_number)
 		db.session.commit()
 	    
 		# Integrating the Gmail API and making a call to the mailer
@@ -487,6 +493,7 @@ def event_delete():
 	print "I am here"
 	emailtobenotified=""
 	event_id = request.form['eventid']
+	print event_id
 	event_tobe_deleted = Event.query.filter_by(event_id=event_id).one()
 	event_tobe_deleted.event_status = "Deleted"
 	registration_tobe_deleted = db.session.query(Registration.registration_id,Registration.event_id,Registration.parent_id,User.email_address).join(User).filter(Registration.event_id==event_id,Registration.status != 'Cancelled').all()	
@@ -515,10 +522,10 @@ def event_delete():
 	
 	db.session.commit()
 
-	print emailtobenotified
+	event_record = Event.query.filter_by(event_id=event_id).one()
 
-	return "Sucess"	
-
+	print "Reached till here #################################"
+	return jsonify(eventid = event_record.event_id,eventstatus =event_record.event_status  )
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the pointyu	q

@@ -68,10 +68,43 @@
     {% endfor %}    
 </tr>
 
-<!-- Adding the Add button for Admin flow-->
 <div align='Right'>
     <span class="glyphicon glyphicon-plus"></span> <button class="btn btn-danger" id="add">Add Event</button>
-</div>    
+</div> 
+<div class="col-xs-12" id="PastEventDataTable">
+
+  <table class="table table-hover">
+        <div class="col-xs-12" class="Title">
+        <h3>Past Events</h3>
+  </div>
+      <thead> 
+          <th style="display: none">Event Id</th>
+          <th>Event Name</th>
+          <th>Event Description</th>
+          <th>Event Date</th>
+          <th>Event Status</th>
+          <th class="EventDataCell">Number of spots</th>
+          <th class="EventDataCell">Number of Registration</th>
+          <th class="EventDataCell">Waitlisted</th>
+          <th class="EventDataCell">Attended</th>
+     </thead>
+    {% for item in past_sign_up %}
+      <tr>
+          <td style="display: none" class ="EventDataCell" id="eventid">{{ item.event_id }}</td>
+          <td class="EventDataCell" id="eventname">{{ item.event_name }}</td>
+          <td class="EventDataCell" id="eventdesc">{{item.event_description}}</td>
+          <td class="EventDataCell" id="eventdate">{{ item.event_date }}</td>
+          <td class="EventDataCell" id="eventstatus">{{ item.event_status }}</td>
+          <td class="EventDataCell" id="noofspots">{{ item.no_of_spots }}</td>
+          <td class="EventDataCell" id="noofregspots">{{ item.no_of_reg_spots }}</td>
+          <td class="EventDataCell" id="noofwaitspots">{{ item.no_of_waitlist_spots }}</td>
+          <td class="EventDataCell" id="noofwaitspots">{{ item.Attended }}</td>
+        </tr>
+    {% endfor %}    
+</div>
+
+<!-- Adding the Add button for Admin flow-->
+   
 
 <script src="static/jquery.js"></script>
 
@@ -173,7 +206,13 @@ $('.delete').on('click', function(){
       // alert("Any event delete")
       
       // Create tds as editable values and assign it to a variable
-      var evenode =$(this).parent().siblings() 
+      var evenode =$(this).parent().siblings()
+      var row = $(this).closest('tr')
+
+      var eveid = $(this).closest("tr").find('#eventid')
+      var evestatus = $(this).closest("tr").find('#eventstatus')
+
+      alert($(evestatus).text())
         var eventjson = {};
 
         $.each(evenode, function () {
@@ -184,8 +223,11 @@ $('.delete').on('click', function(){
               });         
 
     $.post('/admin_event_delete', eventjson , function (results) {
-          var adjective = results;
-          // alert(adjective);
+          var resultsdelete = results;
+          //alert(resultsdelete.eventstatus);
+          $(row).find('#eventstatus').text(resultsdelete.eventstatus)
+          
+
              //})
           });
 
