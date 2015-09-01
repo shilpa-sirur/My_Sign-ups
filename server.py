@@ -54,6 +54,9 @@ def login_process():
 		if user.password == passwd:
 			session["user_id"] = user.user_id
 			session["email"] = email
+			session["first_name"] = user.first_name
+			session["last_name"] = user.last_name
+
 			#flash("Logged in")
 			# print "Logged in"
 			# print session["user_id"]
@@ -127,7 +130,7 @@ def login_process():
 				# print sign_up
 				# print user
 
-			   	return render_template("welcome.html",user=user,children=children,mandated=total_hours,completed=completed_hours,remaining_hours=remaining_hours, percentcomplete = int(percentcomplete), sign_up=sign_up, past_sign_up=past_sign_up)
+			   	return render_template("welcome.html",first_name=session["first_name"],last_name=session["last_name"],user=user,children=children,mandated=total_hours,completed=completed_hours,remaining_hours=remaining_hours, percentcomplete = int(percentcomplete), sign_up=sign_up, past_sign_up=past_sign_up)
 		
 		#if the password stored in the database doesn't matches the one provided in from the login form for that particular email address. Flash wrong message. 	   	
 		else:
@@ -476,7 +479,7 @@ def signup_page():
 
 @app.route("/school_events")
 def school_events():
-	return render_template('school_events.html',user=session["user_id"])
+	return render_template('school_events.html',first_name=session["first_name"],last_name=session["last_name"])
 
 
 @app.route("/survey_feedback")
@@ -484,7 +487,7 @@ def survey_feedback():
 	# print "I am in feedback"
 	# Calling sm api to get responses for the survey on the welcome page
 	feedback = get_sm_survey_response(68255536)
-	return render_template('feedback.html', user=session["user_id"], feedback = feedback)
+	return render_template('feedback.html', first_name=session["first_name"],last_name=session["last_name"], feedback = feedback)
 
 
 #This is the route to delete an event by admin
