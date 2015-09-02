@@ -1,8 +1,8 @@
 from twilio.rest import TwilioRestClient
 
 # Your Account Sid and Auth Token from twilio.com/user/account
-account_sid	=	"AC478fda363a70884edf1d6cbce4dc3993"
-auth_token	=	"1e963836ef2d4e0944c83508aa916f86"
+account_sid	=	[Twillio Account SID]
+auth_token	=	[Twillio Auth Token]
 client 	=	TwilioRestClient(account_sid, auth_token)
 
 def send_twillio_sms(message,phonenumber):
