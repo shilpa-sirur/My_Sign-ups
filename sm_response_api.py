@@ -5,11 +5,11 @@ def get_sm_survey_respondent_ids(surveyid):
 	respondent_ids=[]
 	client = requests.session()
 	client.headers = {
-		"Authorization": "bearer %s" % 'paTBz61kMlD0mPWrsaHR3921EuYbHlBvqU0GDZQ.5nahBvB1GbdZpbh2WnOzXY4SJpMkHXENcoejRFTmPgdAVNY681GkIsJgilCmaeSARQ0=',
+		"Authorization": "bearer %s" % '[Auth KEY ]=',
 		"Content-Type": "application/json"
 		}
 	client.params = {
-		"api_key": "d7fk9g6bmcf6rw3jrzhqpn3r"
+		"api_key": [SM_API_KEY]
 		}
 	
 	HOST = "https://api.surveymonkey.net"
@@ -17,7 +17,7 @@ def get_sm_survey_respondent_ids(surveyid):
 
 	uri = "%s%s" % (HOST, SURVEY_LIST_ENDPOINT)
 
-	data = {"survey_id": "68255536"}
+	data = {"survey_id": ID }
 	response = client.post(uri, data=json.dumps(data))
 	response_json = response.json()
 	#survey_list = response_json["data"]
